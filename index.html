@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Secret Santa 🎄</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#fff}*{box-sizing:border-box}body{margin:0;min-height:100dvh;background:#fff;transition:background 900ms ease;overflow-x:hidden}body.start{color:#111}body.christmas{background:#075b3b}body.identity{background:var(--party,#fa247e)}body.scratch{background:#083c31}body.reveal{background:var(--party,#6639da)}main{min-height:100dvh;display:grid;place-items:center;padding:28px;position:relative;z-index:1}.screen{width:min(100%,650px);text-align:center;animation:enter .65s both}.hidden{display:none!important}h1{font-size:clamp(2.5rem,9vw,5.5rem);line-height:1.04;margin:0 0 24px;text-wrap:balance;text-shadow:0 5px 0 #0002}p{font-size:clamp(1.15rem,3vw,1.65rem);line-height:1.4}.start-label{display:flex;justify-content:center;align-items:center;gap:20px;font-size:clamp(1.4rem,4vw,2.2rem);font-weight:650;cursor:pointer}.start-label input{width:52px;height:52px;accent-color:#087a48;cursor:pointer;flex:none}input[type=text]{border:3px solid #fff;border-radius:16px;padding:18px 22px;width:min(100%,280px);font-size:2rem;text-align:center;text-transform:uppercase;background:#fff;color:#152f26;outline:none;box-shadow:0 12px 35px #0003}button{border:0;border-radius:999px;padding:16px 35px;font-size:1.2rem;font-weight:900;cursor:pointer;background:#fff;color:#173e31;box-shadow:0 8px 0 #0003;transition:transform .2s}button:hover{transform:translateY(-3px)}button:active{transform:translateY(4px);box-shadow:0 3px 0 #0003}.buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}.hint{font-size:1rem;opacity:.85}.error{min-height:1.5em;color:#ffe0a6}.snow{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}.flake{position:absolute;top:-30px;color:white;opacity:.75;animation:fall linear infinite;user-select:none}@keyframes fall{to{transform:translate3d(40px,110vh,0) rotate(360deg)}}@keyframes enter{from{opacity:0;transform:translateY(28px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}.pop{animation:pop .75s cubic-bezier(.16,1.4,.3,1) both}@keyframes pop{from{transform:scale(.25) rotate(-8deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}.tree-wrap{width:min(78vw,360px);aspect-ratio:0.83;margin:25px auto;position:relative;filter:drop-shadow(0 12px 12px #0005)}.tree-shape{position:absolute;inset:0;clip-path:polygon(50% 0,62% 20%,57% 20%,75% 43%,66% 43%,91% 76%,59% 76%,59% 91%,41% 91%,41% 76%,9% 76%,34% 43%,25% 43%,43% 20%,38% 20%);background:#126d3b}.tree-shape img{width:100%;height:100%;object-fit:cover}.tree-shape canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}.final-photo{width:min(78vw,370px);aspect-ratio:4/5;object-fit:cover;border:9px solid #fff;border-radius:18px;box-shadow:0 20px 50px #0005;animation:pop .8s both}.progress{font-weight:800}.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:2}.confetti i{position:absolute;top:-20px;width:10px;height:18px;background:var(--c);animation:fall var(--d) linear forwards}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body class="start">
+<div id="snow" class="snow" aria-hidden="true"></div><div id="confetti" class="confetti" aria-hidden="true"></div>
+<main>
+<section id="start" class="screen"><label class="start-label"><input id="christmassy" type="checkbox"><span>I'm feeling Christmassy</span></label></section>
+<section id="letter" class="screen hidden"><h1>🎄 Ho ho hold up!</h1><p>What's the first letter of your surname?</p><form id="letterForm"><input id="initial" type="text" maxlength="1" autocomplete="off" aria-label="First letter of your surname" required><p><button type="submit">LET'S GO →</button></p></form><p id="letterError" class="error" role="status"></p></section>
+<section id="identity" class="screen hidden"><h1 id="identityText" class="pop"></h1><div class="buttons"><button id="yes">YES, BABY 🎅</button><button id="no">NOPE 🙅</button></div></section>
+<section id="scratch" class="screen hidden"><h1>Welcome Motherfucker!</h1><p>Scratch below to reveal your 'giftee' or whatever.</p><div class="tree-wrap"><div class="tree-shape"><img id="underPhoto" alt="Your Secret Santa recipient"><canvas id="scratchCanvas" aria-label="Scratch the tree to reveal your recipient's photo"></canvas></div></div><p id="progress" class="progress" aria-live="polite">Scratch the tree! 🎄</p><!--><button id="accessReveal" class="hidden">Reveal without scratching</button></--></section><section id="reveal" class="screen hidden"><h1 id="revealText" class="pop"></h1><img id="finalPhoto" class="final-photo" alt="Your Secret Santa recipient"><p><strong id="customMessage"></strong></p><h3><strong>GOOD LUCK BITCH</strong></h3><h3><strong>...and Merry Christmas 🎄</strong></h3><button id="again">Start again ↻</button></section></main>
+<script>
+// EDIT THIS TABLE: each person's initial should be unique for this version.
+// Place images in an 'images' folder alongside index.html.
+const assignments = [
+  {name:'Ando', surname: 'Lyons', recipient:'Toim', image:'/images/toim.png', message:'Maybe get him that ball that you lost..?'},
+  {name:'Toim', surname: 'Holt', recipient:'Roib', image:'/images/roib.png', message:'Um.'},
+  {name:'Gav', surname: 'Kane', recipient:'PhilG', image:'/Users/robertduckersmac/Downloads/secret-santa/images/philg.png', message:'Earthquake laugher incoming..'},
+  {name:'PhilG', surname: 'Griffiths', recipient:'Gav', image:'/images/gav.png', message:'Bet you\'re glad cos it\'s easy, but sad that it\'s not Iestyn.'},
+  {name:'Phil', surname: 'Davies', recipient:'Iestyn', image:'/images/iest.jpeg', message:'Unlucky!'},
+  {name:'Iestyn', surname: 'Williams', recipient:'Paul Turtle', image:'/images/paulo.jpeg', message:'PURPLE WORM!'},
+  {name:'Paul Turtle', surname: 'Price', recipient:'Ando', image:'/images/ando.png', message:'You can\'t fail!'},
+  {name:'Roib', surname: 'zDuckers', recipient:'Phil', image:'/images/phild.jpeg', message:'easy one'}
+];
+const $=id=>document.getElementById(id);
+const screens=['start','letter','identity','scratch','reveal'];
+const palette=['#ed2779','#7c38dc','#f15b25','#0d96aa','#e43e4d','#5149cf','#c436a2'];
+let current=null, scratched=false, lastPoint=null, checkCounter=0;
+function show(id,bodyClass){screens.forEach(s=>$(s).classList.toggle('hidden',s!==id));document.body.className=bodyClass;}
+function party(){document.documentElement.style.setProperty('--party',palette[Math.floor(Math.random()*palette.length)]);}
+function makeSnow(){const snow=$('snow');for(let i=0;i<75;i++){const f=document.createElement('span');f.className='flake';f.textContent=['❄','•','✻'][i%3];f.style.left=Math.random()*100+'%';f.style.fontSize=(8+Math.random()*18)+'px';f.style.animationDuration=(5+Math.random()*9)+'s';f.style.animationDelay=(-Math.random()*15)+'s';snow.append(f);}}
+function reset(){current=null;scratched=false;$('christmassy').checked=false;$('initial').value='';$('letterError').textContent='';$('snow').replaceChildren();$('confetti').replaceChildren();show('start','start');}
+$('christmassy').addEventListener('change',()=>{if(!$('christmassy').checked)return;makeSnow();show('letter','christmas');setTimeout(()=>$('initial').focus(),400);});
+$('letterForm').addEventListener('submit',e=>{e.preventDefault();const initial=$('initial').value.trim().toLowerCase();const matches=assignments.filter(a=>a.surname.toLowerCase().startsWith(initial));if(!initial||!matches.length){$('letterError').textContent="Hmm... you're not on Santa's list!";return;}if(matches.length>1){$('letterError').textContent='More than one person has that initial. Update the table or use full names.';return;}current=matches[0];party();$('identityText').textContent=`Holy shit! Are you ${current.name}?`;$('identityText').classList.remove('pop');void $('identityText').offsetWidth;$('identityText').classList.add('pop');show('identity','identity');});
+$('no').addEventListener('click',reset);
+$('yes').addEventListener('click',()=>{if(!current)return;$('underPhoto').src=current.image;$('finalPhoto').src=current.image;$('underPhoto').onerror=()=>{$('progress').textContent='Photo missing — check the image path in the table.'};show('scratch','scratch');initScratch();});
+const canvas=$('scratchCanvas');const ctx=canvas.getContext('2d',{willReadFrequently:true});
+function treePath(c,w,h){c.beginPath();const pts=[[.5,0],[.62,.2],[.57,.2],[.75,.43],[.66,.43],[.91,.76],[.59,.76],[.59,.91],[.41,.91],[.41,.76],[.09,.76],[.34,.43],[.25,.43],[.43,.2],[.38,.2]];pts.forEach(([x,y],i)=>i?c.lineTo(x*w,y*h):c.moveTo(x*w,y*h));c.closePath();}
+function initScratch(){scratched=false;checkCounter=0;lastPoint=null;const rect=canvas.getBoundingClientRect();const dpr=window.devicePixelRatio||1;canvas.width=Math.round(rect.width*dpr);canvas.height=Math.round(rect.height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);const w=rect.width,h=rect.height;ctx.clearRect(0,0,w,h);treePath(ctx,w,h);ctx.fillStyle='#157d42';ctx.fill();ctx.save();treePath(ctx,w,h);ctx.clip();for(let i=0;i<90;i++){ctx.fillStyle=['#f9df79','#ef3c53','#e8f8e5'][i%3];ctx.beginPath();ctx.arc(Math.random()*w,Math.random()*h,2+Math.random()*4,0,Math.PI*2);ctx.fill();}ctx.restore();$('progress').textContent='Scratch the tree! 🎄';$('accessReveal').classList.remove('hidden');}
+function point(e){const r=canvas.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
+function erase(p){ctx.save();ctx.globalCompositeOperation='destination-out';ctx.lineWidth=36;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();if(lastPoint){ctx.moveTo(lastPoint.x,lastPoint.y);ctx.lineTo(p.x,p.y);}else{ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+.1,p.y+.1);}ctx.stroke();ctx.restore();lastPoint=p;if(++checkCounter%5===0)checkProgress();}
+let drawing=false;
+canvas.addEventListener('pointerdown',e=>{if(scratched)return;drawing=true;canvas.setPointerCapture(e.pointerId);erase(point(e));});
+canvas.addEventListener('pointermove',e=>{if(drawing&&!scratched)erase(point(e));});
+function endDraw(){if(drawing){drawing=false;lastPoint=null;checkProgress();}}
+canvas.addEventListener('pointerup',endDraw);canvas.addEventListener('pointercancel',endDraw);
+function checkProgress(){if(scratched)return;const {width:w,height:h}=canvas;const data=ctx.getImageData(0,0,w,h).data;let total=0,cleared=0;for(let y=0;y<h;y+=4)for(let x=0;x<w;x+=4){const nx=x/w,ny=y/h;if(inTree(nx,ny)){total++;if(data[(y*w+x)*4+3]<80)cleared++;}}const pct=total?cleared/total:0;$('progress').textContent=`${Math.round(pct*100)}% scratched — keep going!`;if(pct>=.7)finish();}
+function inTree(x,y){const pts=[[.5,0],[.62,.2],[.57,.2],[.75,.43],[.66,.43],[.91,.76],[.59,.76],[.59,.91],[.41,.91],[.41,.76],[.09,.76],[.34,.43],[.25,.43],[.43,.2],[.38,.2]];let inside=false;for(let i=0,j=pts.length-1;i<pts.length;j=i++){const xi=pts[i][0],yi=pts[i][1],xj=pts[j][0],yj=pts[j][1];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)inside=!inside;}return inside;}
+
+function finish() {
+  if (scratched) return;
+  scratched = true;
+  party();
+
+  $('revealText').textContent = `You got ${current.recipient}!`;
+  $('finalPhoto').alt = `Photo of ${current.recipient}`;
+
+  // Display personalised message
+  $('customMessage').textContent = current.message || '';
+
+  show('reveal', 'reveal');
+
+  const c = $('confetti');
+  for (let i = 0; i < 110; i++) {
+    const bit = document.createElement('i');
+    bit.style.left = Math.random() * 100 + '%';
+    bit.style.setProperty('--c', ['#ffe46b', '#fff', '#ff608b', '#5de8d2'][i % 4]);
+    bit.style.setProperty('--d', (2 + Math.random() * 3) + 's');
+    bit.style.animationDelay = Math.random() * 1.3 + 's';
+    c.append(bit);
+  }
+
+  setTimeout(() => c.replaceChildren(), 6500);
+}
+
+$('accessReveal').addEventListener('click', finish);
+$('again').addEventListener('click', reset);
+</script>
+</body>
+</html>
